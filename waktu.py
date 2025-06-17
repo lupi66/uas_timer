@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-import time
 
 class PengingatBelajar:
     def __init__(self, root):
