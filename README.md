@@ -1,1 +1,6 @@
 # Penjelasan Code
+
+## Import
+'''python
+
+'''
