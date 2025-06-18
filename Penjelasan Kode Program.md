@@ -1,4 +1,4 @@
-# Penjelasan Code
+# Penjelasan Kode Program Pengingat Belajar Berbasis Timer
 
 ## Import
 ```python
