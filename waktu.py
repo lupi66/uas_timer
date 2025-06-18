@@ -89,7 +89,7 @@ def mulai_sesi():
 
 if __name__ == "__main__":
         while True:
-            print("\n=== PENGINGAT BELAJAR ===")
+            print("\n=== ATUR WAKTU BELAJAR ===")
             print("1. Mulai sesi belajar sekarang")
             print("2. Tampilkan riwayat belajar")
             print("3. Hapus riwayat belajar")
