@@ -26,6 +26,7 @@ def alarm_suara():
     except ImportError:
         print("\n(Bunyi alarm tidak tersedia di sistem ini.)")
 ```
+#### Bagian Fungsi alarm_suara
 ```python
 for _ in range(3):
     winsound.Beep(10001, 500)
@@ -42,16 +43,21 @@ def simpan_riwayat(note):
         f.write(f"{sekarang} - {note}\n")
 
 ```
+#### Bagian Fungsi simpan_riwayat(note)
 ```python
 sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 ```
 - Mengambil waktu saat ini menggunakan datetime.now() dan disimpan dengan format tahun - bulan - tanggal Jam:Menit:Detik dengan .strftime("%Y-%m-%d %H:%M:%S") lalu dimasukkan ke variabel *Sekarang*
+  
+#### Bagian Fungsi simpan_riwayat(note)
 ```python
 with open(RIWAYAT_FILE, "a") as f:
 ```
 - Membuka file riwayat.txt (nama disimpan di variabel RIWAYAT_FILE) <br>
 - Mode "a" artinya append: menambahkan data di akhir file tanpa menghapus isinya. <br>
 - as f memberi nama f sebagai alias file handler agar bisa digunakan dalam blok ini.
+
+  #### Bagian Fungsi simpan_riwayat(note)
 ```python
 f.write(f"{sekarang} - {note}\n")
 ```
@@ -75,12 +81,16 @@ def tampilkan_riwayat():
                 print(f" - {waktu_str}: {note}")
 
 ```
+
+#### Bagian Fungsi tampilkan_riwayat()
 ```python
 if not os.path.exists(RIWAYAT_FILE):
         print("Belum ada riwayat.")
         return
 ```
 - Cek apakah file-nya ada. Jika tidak maka akan muncul pesan
+
+  #### Bagian Fungsi tampilkan_riwayat()
 ```python
 for baris in f:
             waktu_str, note = baris.strip().split(" - ", 1)
@@ -121,11 +131,15 @@ def hitung_mundur_interaktif(detik, mode, catatan=""):
     alarm_suara()
     return True
 ```
+
+#### Bagian Fungsi hitung_mundur_interaktif()
 ```python
 if mode == "Belajar":
         print(f"\nSemangat yaa belajar {catatan} !!!\n")
 ```
 - Jika mode-nya "Belajar", akan menyemangatinya pakai catatan sesuai yang di input User.
+
+  #### Bagian Fungsi hitung_mundur_interaktif()
 ```python
 while detik > 0:
         menit, sisa_detik = divmod(detik, 60)
@@ -134,6 +148,8 @@ while detik > 0:
         time.sleep(1)
 ```
 - Menampilkan countdown timer
+
+  #### Bagian Fungsi hitung_mundur_interaktif()
 ```python
 print(f"\n{mode} selesai!")
     alarm_suara()
@@ -170,6 +186,8 @@ def mulai_sesi():
     else:
         print("Sesi diselesaikan.")
 ```
+
+#### Bagian Fungsi mulai_sesi()
 ```python
 catatan = input("Mau belajar apa hari ini: ")
     try:
@@ -194,6 +212,8 @@ catatan = input("Mau belajar apa hari ini: ")
 ```
 - Fungsi utama untuk memulai satu sesi belajar lalu sesi istirahat. <br>
 - Mencatat riwayat awal dan akhir.
+
+  #### Bagian Fungsi mulai_sesi()
 ```python
  lanjut = input("Mau lanjut belajar lagi? (y/n): ")
     if lanjut.lower() == "y":
