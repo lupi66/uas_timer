@@ -1,57 +1,110 @@
-import tkinter as tk
-from tkinter import messagebox, simpledialog
+import time
+import os
+import threading
+from datetime import datetime, timedelta
 
-class PengingatBelajar:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Timer Belajar")
-        self.root.geometry("300x200")
-        
-        self.label = tk.Label(root, text="", font=("Helvetica", 16))
-        self.label.pack(pady=20)
+RIWAYAT_FILE = "riwayat.txt"
 
-        self.mulai_sesi()
+def alarm_suara():
+    try:
+        import winsound
+        for _ in range(3):
+            winsound.Beep(10001, 500)
+            time.sleep(0.5)
+    except ImportError:
+        print("\n(Bunyi alarm tidak tersedia di sistem ini.)")
 
-    def mulai_sesi(self):
-        belajar = simpledialog.askinteger("Input", "Berapa menit waktu belajar?", minvalue=1)
-        istirahat = simpledialog.askinteger("Input", "Berapa menit waktu istirahat?", minvalue=1)
+def simpan_riwayat(note):
+    sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(RIWAYAT_FILE, "a") as f:
+        f.write(f"{sekarang} - {note}\n")
 
-        if belajar is None or istirahat is None:
-            messagebox.showinfo("Batal", "Program dibatalkan.")
-            self.root.destroy()
-            return
-        
-        self.mulai_timer(belajar * 60, "Belajar")
+def tampilkan_riwayat():
+    if not os.path.exists(RIWAYAT_FILE):
+        print("Belum ada riwayat.")
+        return
 
-        self.root.after(belajar * 60 * 1000, lambda: self.selesai_belajar(istirahat))
+    sekarang = datetime.now()
+    batas = sekarang - timedelta(days=1)
+    print("\nRiwayat:")
+    with open(RIWAYAT_FILE, "r") as f:
+        for baris in f:
+            waktu_str, note = baris.strip().split(" - ", 1)
+            waktu = datetime.strptime(waktu_str, "%Y-%m-%d %H:%M:%S")
+            if waktu > batas:
+                print(f" - {waktu_str}: {note}")
 
-    def mulai_timer(self, durasi, mode):
-        def update():
-            nonlocal durasi
-            menit, detik = divmod(durasi, 60)
-            self.label.config(text=f"{mode}: {menit:02d}:{detik:02d}")
-            if durasi > 0:
-                durasi -= 1
-                self.root.after(1000, update)
-        
-        update()
-
-    def selesai_belajar(self, durasi_istirahat):
-        messagebox.showinfo("Selesai Belajar", "Waktu belajar selesai! Saatnya istirahat.")
-        self.mulai_timer(durasi_istirahat * 60, "Istirahat")
-
-        self.root.after(durasi_istirahat * 60 * 1000, self.setelah_istirahat)
-
-    def setelah_istirahat(self):
-        lanjut = messagebox.askyesno("Lanjut Belajar?", "Waktu istirahat selesai.\nMau lanjut belajar?")
-        if lanjut:
-            self.mulai_sesi()
+def hapus_riwayat():
+    if os.path.exists(RIWAYAT_FILE):
+        konfirmasi = input("Ingin menghapus seluruh riwayat? (y/n): ")
+        if konfirmasi.lower() == "y":
+            os.remove(RIWAYAT_FILE)
+            print("Riwayat berhasil dihapus.")
         else:
-            messagebox.showinfo("Selesai", "Program selesai. Semangat terus ya!")
-            self.root.destroy()
+            print("Penghapusan dibatalkan.")
+    else:
+        print("Tidak ada riwayat untuk dihapus.")
 
-# Jalankan program
+def hitung_mundur_interaktif(detik, mode, catatan=""):
+    if mode == "Belajar":
+        print(f"\nSemangat yaa belajar {catatan} !!!\n")
+
+    while detik > 0:
+        menit, sisa_detik = divmod(detik, 60)
+        print(f"{mode}: {menit:02d}:{sisa_detik:02d}", end="\r")
+        detik -= 1
+        time.sleep(1)
+
+    print(f"\n{mode} selesai!")
+    alarm_suara()
+    return True
+
+
+def mulai_sesi():
+    catatan = input("Mau belajar apa hari ini: ")
+    try:
+        belajar = int(input("Belajar berapa menit: "))
+        istirahat = int(input("Istirahat berapa menit: "))
+    except ValueError:
+        print("Masukkan angka yang valid.")
+        return
+
+    simpan_riwayat(f"Mulai belajar: {catatan}")
+    print("\nSesi belajar dimulai...")
+    selesai = hitung_mundur_interaktif(belajar * 60, "Sisa Waktu Belajar", catatan)
+    if not selesai:
+        return
+    
+    print("Waktu belajar selesai! Saatnya istirahat...")
+    selesai = hitung_mundur_interaktif(istirahat * 60, "Sisa Waktu Istirahat")
+    if not selesai:
+        return
+
+    simpan_riwayat(f"Selesai belajar: {catatan}")
+    lanjut = input("Mau lanjut belajar lagi? (y/n): ")
+    if lanjut.lower() == "y":
+        mulai_sesi()
+    else:
+        print("Sesi diselesaikan.")
+
 if __name__ == "__main__":
-    root = tk.Tk()
-    app = PengingatBelajar(root)
-    root.mainloop()
+        while True:
+            print("\n=== PENGINGAT BELAJAR ===")
+            print("1. Mulai sesi belajar sekarang")
+            print("2. Tampilkan riwayat belajar")
+            print("3. Hapus riwayat belajar")
+            print("4. Keluar")
+            pilihan = input("Pilih menu: ")
+
+            if pilihan == "1":
+                mulai_sesi()
+            elif pilihan == "2":
+                tampilkan_riwayat()
+            elif pilihan == "3":
+                hapus_riwayat()
+            elif pilihan == "4":
+                print("Program dihentikan.")
+                break
+            else:
+                print("Pilihan tidak valid.")
+
