@@ -1,6 +1,5 @@
 import time
 import os
-import threading
 from datetime import datetime, timedelta
 
 RIWAYAT_FILE = "riwayat.txt"
@@ -45,23 +44,26 @@ def hapus_riwayat():
     else:
         print("Tidak ada riwayat untuk dihapus.")
 
-def hitung_mundur_interaktif(detik, mode, catatan=""):
+def hitung_mundur_interaktif(detik, mode, judul="", catatan=""):
     if mode == "Belajar":
-        print(f"\nSemangat yaa belajar {catatan} !!!\n")
+        print(f"\nSemangat yaa belajar {judul} !!!\n")
+        if catatan:
+            print(f"Catatan: {catatan}\n")
 
     while detik > 0:
         menit, sisa_detik = divmod(detik, 60)
         print(f"{mode}: {menit:02d}:{sisa_detik:02d}", end="\r")
         detik -= 1
         time.sleep(1)
-
+    
     print(f"\n{mode} selesai!")
     alarm_suara()
     return True
 
 
 def mulai_sesi():
-    catatan = input("Mau belajar apa hari ini: ")
+    judul = input("Mau belajar apa hari ini: ")
+    catatan = input("Catatan kecil (boleh dikosongkan): ")
     try:
         belajar = int(input("Belajar berapa menit: "))
         istirahat = int(input("Istirahat berapa menit: "))
@@ -69,9 +71,9 @@ def mulai_sesi():
         print("Masukkan angka yang valid.")
         return
 
-    simpan_riwayat(f"Mulai belajar: {catatan}")
+    simpan_riwayat(f"Mulai belajar: {judul} | Catatan: {catatan}")
     print("\nSesi belajar dimulai...")
-    selesai = hitung_mundur_interaktif(belajar * 60, "Sisa Waktu Belajar", catatan)
+    selesai = hitung_mundur_interaktif(belajar * 60, "Belajar", judul, catatan)
     if not selesai:
         return
     
@@ -80,7 +82,7 @@ def mulai_sesi():
     if not selesai:
         return
 
-    simpan_riwayat(f"Selesai belajar: {catatan}")
+    simpan_riwayat(f"Selesai belajar: {judul} | Catatan: {catatan}")
     lanjut = input("Mau lanjut belajar lagi? (y/n): ")
     if lanjut.lower() == "y":
         mulai_sesi()
@@ -107,4 +109,3 @@ if __name__ == "__main__":
                 break
             else:
                 print("Pilihan tidak valid.")
-
