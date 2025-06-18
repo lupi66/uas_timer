@@ -2,46 +2,233 @@
 
 ## Import
 ```python
-import tkinter as tk
-from tkinter import messagebox, simpledialog
+import time
+import os
+from datetime import datetime, timedelta
 ```
-tkinter untuk tampilan GUI (Graphical User Interface). <br>
-messagebox dan simpledialog: dialog pop-up untuk input dan notifikasi.
+- time : Untuk fungsi atur waktunya. <br>
+- os : Untuk mengecek dan menghapus file (os.path.exists, os.remove). <br>
+- datetime dan timedelta : Untuk mencatat waktu saat ini dan menghitung selisih waktu
 
-## Tampilan Timer Belajar
+## Simpan File Riwayat
 ```python
-class PengingatBelajar:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Timer Belajar")
-        self.root.geometry("300x200")
-
-        self.label = tk.Label(root, text="", font=("Helvetica", 16))
-        self.label.pack(pady=20)
-
-        self.mulai_sesi()
+RIWAYAT_FILE = "riwayat.txt"
 ```
-__init__ : fungsi awal 
 
-## Input User
+##  Fungsi alarm_suara
 ```python
-def mulai_sesi(self):
-      belajar = simpledialog.askinteger("Input", "Berapa menit waktu belajar?", minvalue=1)
-      istirahat = simpledialog.askinteger("Input", "Berapa menit waktu istirahat?", minvalue=1)
+def alarm_suara():
+    try:
+        import winsound
+        for _ in range(3):
+            winsound.Beep(10001, 500)
+            time.sleep(0.5)
+    except ImportError:
+        print("\n(Bunyi alarm tidak tersedia di sistem ini.)")
 ```
-askinteger : hanya menerima angka bulat
-
-## Jika User Memilih Cancel, Program dihentikan
 ```python
-if belajar is None or istirahat is None:
-            messagebox.showinfo("Batal", "Program dibatalkan.")
-            self.root.destroy()
-            return
+for _ in range(3):
+    winsound.Beep(10001, 500)
+    time.sleep(0.5)
 ```
+- winsound.Beep(10001, 500) : Mengeluarkan bunyi dengan frekuensi 10001 Hz selama 500 milidetik (0.5 detik). <br>
+- for _ in range(3) : Mengulanginya sebanyak 3 kali.
 
-## Ubah Timer dari Menit ke Detik
+## Fungsi simpan_riwayat(note)
 ```python
-self.mulai_timer(belajar * 60, "Belajar")
+def simpan_riwayat(note):
+    sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(RIWAYAT_FILE, "a") as f:
+        f.write(f"{sekarang} - {note}\n")
+
 ```
+```python
+sekarang = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+```
+- Mengambil waktu saat ini menggunakan datetime.now() dan disimpan dengan format tahun - bulan - tanggal Jam:Menit:Detik dengan .strftime("%Y-%m-%d %H:%M:%S") lalu dimasukkan ke variabel *Sekarang*
+```python
+with open(RIWAYAT_FILE, "a") as f:
+```
+- Membuka file riwayat.txt (nama disimpan di variabel RIWAYAT_FILE) <br>
+- Mode "a" artinya append: menambahkan data di akhir file tanpa menghapus isinya. <br>
+- as f memberi nama f sebagai alias file handler agar bisa digunakan dalam blok ini.
+```python
+f.write(f"{sekarang} - {note}\n")
+```
+Format isi file
+
+## Fungsi tampilkan_riwayat()
+```python
+def tampilkan_riwayat():
+    if not os.path.exists(RIWAYAT_FILE):
+        print("Belum ada riwayat.")
+        return
+
+    sekarang = datetime.now()
+    batas = sekarang - timedelta(days=1)
+    print("\nRiwayat:")
+    with open(RIWAYAT_FILE, "r") as f:
+        for baris in f:
+            waktu_str, note = baris.strip().split(" - ", 1)
+            waktu = datetime.strptime(waktu_str, "%Y-%m-%d %H:%M:%S")
+            if waktu > batas:
+                print(f" - {waktu_str}: {note}")
+
+```
+```python
+if not os.path.exists(RIWAYAT_FILE):
+        print("Belum ada riwayat.")
+        return
+```
+Cek apakah file-nya ada. Jika tidak maka akan muncul pesan
+```python
+for baris in f:
+            waktu_str, note = baris.strip().split(" - ", 1)
+            waktu = datetime.strptime(waktu_str, "%Y-%m-%d %H:%M:%S")
+            if waktu > batas:
+                print(f" - {waktu_str}: {note}")
+```
+Membaca file per baris dan menampilkan riwayat dalam 24 jam terakhir
+
+## Fungsi hapus_riwayat()
+```python
+def hapus_riwayat():
+    if os.path.exists(RIWAYAT_FILE):
+        konfirmasi = input("Ingin menghapus seluruh riwayat? (y/n): ")
+        if konfirmasi.lower() == "y":
+            os.remove(RIWAYAT_FILE)
+            print("Riwayat berhasil dihapus.")
+        else:
+            print("Penghapusan dibatalkan.")
+    else:
+        print("Tidak ada riwayat untuk dihapus.")
+```
+Kasih pilihan untuk menghapus seluruh isi riwayat setelah konfirmasi.
+
+## Fungsi hitung_mundur_interaktif()
+```python
+def hitung_mundur_interaktif(detik, mode, catatan=""):
+    if mode == "Belajar":
+        print(f"\nSemangat yaa belajar {catatan} !!!\n")
+
+    while detik > 0:
+        menit, sisa_detik = divmod(detik, 60)
+        print(f"{mode}: {menit:02d}:{sisa_detik:02d}", end="\r")
+        detik -= 1
+        time.sleep(1)
+
+    print(f"\n{mode} selesai!")
+    alarm_suara()
+    return True
+```
+```python
+if mode == "Belajar":
+        print(f"\nSemangat yaa belajar {catatan} !!!\n")
+```
+Jika mode-nya "Belajar", akan menyemangatinya pakai catatan yang di input User.
+```python
+while detik > 0:
+        menit, sisa_detik = divmod(detik, 60)
+        print(f"{mode}: {menit:02d}:{sisa_detik:02d}", end="\r")
+        detik -= 1
+        time.sleep(1)
+```
+Menampilkan countdown timer
+```python
+print(f"\n{mode} selesai!")
+    alarm_suara()
+    return True
+```
+Setelah waktu habis, bunyi alarm akan diputar.
+
+## Fungsi mulai_sesi()
+```python
+def mulai_sesi():
+    catatan = input("Mau belajar apa hari ini: ")
+    try:
+        belajar = int(input("Belajar berapa menit: "))
+        istirahat = int(input("Istirahat berapa menit: "))
+    except ValueError:
+        print("Masukkan angka yang valid.")
+        return
+
+    simpan_riwayat(f"Mulai belajar: {catatan}")
+    print("\nSesi belajar dimulai...")
+    selesai = hitung_mundur_interaktif(belajar * 60, "Sisa Waktu Belajar", catatan)
+    if not selesai:
+        return
+    
+    print("Waktu belajar selesai! Saatnya istirahat...")
+    selesai = hitung_mundur_interaktif(istirahat * 60, "Sisa Waktu Istirahat")
+    if not selesai:
+        return
+
+    simpan_riwayat(f"Selesai belajar: {catatan}")
+    lanjut = input("Mau lanjut belajar lagi? (y/n): ")
+    if lanjut.lower() == "y":
+        mulai_sesi()
+    else:
+        print("Sesi diselesaikan.")
+```
+```python
+catatan = input("Mau belajar apa hari ini: ")
+    try:
+        belajar = int(input("Belajar berapa menit: "))
+        istirahat = int(input("Istirahat berapa menit: "))
+    except ValueError:
+        print("Masukkan angka yang valid.")
+        return
+
+    simpan_riwayat(f"Mulai belajar: {catatan}")
+    print("\nSesi belajar dimulai...")
+    selesai = hitung_mundur_interaktif(belajar * 60, "Sisa Waktu Belajar", catatan)
+    if not selesai:
+        return
+    
+    print("Waktu belajar selesai! Saatnya istirahat...")
+    selesai = hitung_mundur_interaktif(istirahat * 60, "Sisa Waktu Istirahat")
+    if not selesai:
+        return
+
+    simpan_riwayat(f"Selesai belajar: {catatan}")
+```
+- Fungsi utama untuk memulai satu sesi belajar lalu sesi istirahat. <br>
+- Mencatat riwayat awal dan akhir.
+```python
+ lanjut = input("Mau lanjut belajar lagi? (y/n): ")
+    if lanjut.lower() == "y":
+        mulai_sesi()
+    else:
+        print("Sesi diselesaikan.")
+```
+Setelah selesai istirahat, bisa pilih lanjut belajar atau diselesaikan
+
+## Blok Main (Program Utama)
+```python
+if __name__ == "__main__":
+        while True:
+            print("\n=== ATUR WAKTU BELAJAR ===")
+            print("1. Mulai sesi belajar sekarang")
+            print("2. Tampilkan riwayat belajar")
+            print("3. Hapus riwayat belajar")
+            print("4. Keluar")
+            pilihan = input("Pilih menu: ")
+
+            if pilihan == "1":
+                mulai_sesi()
+            elif pilihan == "2":
+                tampilkan_riwayat()
+            elif pilihan == "3":
+                hapus_riwayat()
+            elif pilihan == "4":
+                print("Program dihentikan.")
+                break
+            else:
+                print("Pilihan tidak valid.")
+```
+- Menu utama interaktif. <br>
+- Memanggil fungsi sesuai input User. <br>
+- Berulang sampai User memilih keluar. <br>
+
 
 
