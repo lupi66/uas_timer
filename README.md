@@ -55,7 +55,7 @@ with open(RIWAYAT_FILE, "a") as f:
 ```python
 f.write(f"{sekarang} - {note}\n")
 ```
-Format isi file
+- Format isi file
 
 ## Fungsi tampilkan_riwayat()
 ```python
@@ -80,7 +80,7 @@ if not os.path.exists(RIWAYAT_FILE):
         print("Belum ada riwayat.")
         return
 ```
-Cek apakah file-nya ada. Jika tidak maka akan muncul pesan
+- Cek apakah file-nya ada. Jika tidak maka akan muncul pesan
 ```python
 for baris in f:
             waktu_str, note = baris.strip().split(" - ", 1)
@@ -88,7 +88,7 @@ for baris in f:
             if waktu > batas:
                 print(f" - {waktu_str}: {note}")
 ```
-Membaca file per baris dan menampilkan riwayat dalam 24 jam terakhir
+- Membaca file per baris dan menampilkan riwayat dalam 24 jam terakhir
 
 ## Fungsi hapus_riwayat()
 ```python
@@ -103,7 +103,7 @@ def hapus_riwayat():
     else:
         print("Tidak ada riwayat untuk dihapus.")
 ```
-Kasih pilihan untuk menghapus seluruh isi riwayat setelah konfirmasi.
+- Kasih pilihan untuk menghapus seluruh isi riwayat setelah konfirmasi.
 
 ## Fungsi hitung_mundur_interaktif()
 ```python
@@ -125,7 +125,7 @@ def hitung_mundur_interaktif(detik, mode, catatan=""):
 if mode == "Belajar":
         print(f"\nSemangat yaa belajar {catatan} !!!\n")
 ```
-Jika mode-nya "Belajar", akan menyemangatinya pakai catatan yang di input User.
+- Jika mode-nya "Belajar", akan menyemangatinya pakai catatan sesuai yang di input User.
 ```python
 while detik > 0:
         menit, sisa_detik = divmod(detik, 60)
@@ -133,13 +133,13 @@ while detik > 0:
         detik -= 1
         time.sleep(1)
 ```
-Menampilkan countdown timer
+- Menampilkan countdown timer
 ```python
 print(f"\n{mode} selesai!")
     alarm_suara()
     return True
 ```
-Setelah waktu habis, bunyi alarm akan diputar.
+- Setelah waktu habis, bunyi alarm akan diputar.
 
 ## Fungsi mulai_sesi()
 ```python
@@ -201,7 +201,7 @@ catatan = input("Mau belajar apa hari ini: ")
     else:
         print("Sesi diselesaikan.")
 ```
-Setelah selesai istirahat, bisa pilih lanjut belajar atau diselesaikan
+- Setelah selesai istirahat, bisa pilih lanjut belajar atau diselesaikan
 
 ## Blok Main (Program Utama)
 ```python
