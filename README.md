@@ -57,7 +57,7 @@ with open(RIWAYAT_FILE, "a") as f:
 - Mode "a" artinya append: menambahkan data di akhir file tanpa menghapus isinya. <br>
 - as f memberi nama f sebagai alias file handler agar bisa digunakan dalam blok ini.
 
-  #### Bagian Fungsi simpan_riwayat(note)
+#### Bagian Fungsi simpan_riwayat(note)
 ```python
 f.write(f"{sekarang} - {note}\n")
 ```
@@ -90,7 +90,7 @@ if not os.path.exists(RIWAYAT_FILE):
 ```
 - Cek apakah file-nya ada. Jika tidak maka akan muncul pesan
 
-  #### Bagian Fungsi tampilkan_riwayat()
+#### Bagian Fungsi tampilkan_riwayat()
 ```python
 for baris in f:
             waktu_str, note = baris.strip().split(" - ", 1)
@@ -139,7 +139,7 @@ if mode == "Belajar":
 ```
 - Jika mode-nya "Belajar", akan menyemangatinya pakai catatan sesuai yang di input User.
 
-  #### Bagian Fungsi hitung_mundur_interaktif()
+#### Bagian Fungsi hitung_mundur_interaktif()
 ```python
 while detik > 0:
         menit, sisa_detik = divmod(detik, 60)
@@ -149,7 +149,7 @@ while detik > 0:
 ```
 - Menampilkan countdown timer
 
-  #### Bagian Fungsi hitung_mundur_interaktif()
+#### Bagian Fungsi hitung_mundur_interaktif()
 ```python
 print(f"\n{mode} selesai!")
     alarm_suara()
@@ -213,7 +213,7 @@ catatan = input("Mau belajar apa hari ini: ")
 - Fungsi utama untuk memulai satu sesi belajar lalu sesi istirahat. <br>
 - Mencatat riwayat awal dan akhir.
 
-  #### Bagian Fungsi mulai_sesi()
+#### Bagian Fungsi mulai_sesi()
 ```python
  lanjut = input("Mau lanjut belajar lagi? (y/n): ")
     if lanjut.lower() == "y":
